@@ -1,17 +1,21 @@
-package main
+package simpleserver
 
 import (
 	"context"
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/go-ocf/go-coap"
+	"github.com/go-ocf/go-coap/codes"
 )
 
 // Serve : simple example for coap server
-func Serve() {
+func Serve(ip string, port int) {
+	fmt.Println("server")
 	mux := coap.NewServeMux()
 	mux.Handle("/packetCapture", coap.HandlerFunc(handler))
-	log.Fatal(coap.ListenAndServe("udp", ":5684", mux))
+	log.Fatal(coap.ListenAndServe("udp", fmt.Sprintf("%s:%d", ip, port), mux))
 }
 
 func handler(w coap.ResponseWriter, req *coap.Request) {
