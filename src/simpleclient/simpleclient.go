@@ -1,11 +1,11 @@
 package simpleclient
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/go-ocf/go-coap"
@@ -26,27 +26,34 @@ func Serve(ip string, port int) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := co.GetWithContext(ctx, path)
-	if err != nil {
-		log.Fatalf("Error sending request: %v", err)
-	}
-	log.Printf("Response payload: %s", string(resp.Payload()))
+	// resp, err := co.GetWithContext(ctx, path)
+	// if err != nil {
+	// 	log.Fatalf("Error sending request: %v", err)
+	// }
+	// log.Printf("Response payload: %s", string(resp.Payload()))
 
-	resp, err = co.PostWithContext(ctx, path, coap.TextPlain, strings.NewReader("Hello Server!!"))
-	if err != nil {
-		log.Fatalf("Error sending request: %v", err)
-	}
-	log.Printf("Response payload: %s", string(resp.Payload()))
+	b := make([]byte, 800)
 
-	resp, err = co.PutWithContext(ctx, path, coap.TextPlain, strings.NewReader("Hello Server!!"))
-	if err != nil {
-		log.Fatalf("Error sending request: %v", err)
+	for i := 0; i < 800; i++ {
+		b[i] = 1
 	}
-	log.Printf("Response payload: %s", string(resp.Payload()))
+	for i := 0; i < 10; i++ {
+		msg, err := co.NewPutRequest(path, coap.TextPlain, bytes.NewReader(b))
+		if err != nil {
+			log.Fatalln(err)
+		}
+		co.WriteMsgWithContext(ctx, msg)
+	}
 
-	resp, err = co.DeleteWithContext(ctx, path)
-	if err != nil {
-		log.Fatalf("Error sending request: %v", err)
-	}
-	log.Printf("Response payload: %s", string(resp.Payload()))
+	// resp, err = co.PutWithContext(ctx, path, coap.TextPlain, strings.NewReader("Hello Server!!"))
+	// if err != nil {
+	// 	log.Fatalf("Error sending request: %v", err)
+	// }
+	// log.Printf("Response payload: %s", string(resp.Payload()))
+
+	// resp, err = co.DeleteWithContext(ctx, path)
+	// if err != nil {
+	// 	log.Fatalf("Error sending request: %v", err)
+	// }
+	// log.Printf("Response payload: %s", string(resp.Payload()))
 }

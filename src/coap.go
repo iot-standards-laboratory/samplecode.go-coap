@@ -12,7 +12,7 @@ import (
 func main() {
 	fmt.Println("Hello world!!")
 
-	observeExample()
+	simpleExample()
 }
 
 func simpleExample() {
